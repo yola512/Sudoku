@@ -1,0 +1,31 @@
+# CLion project files
+.idea/
+
+# CMake build artifacts
+cmake-build-*/
+
+# CMake-generated files
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+compile_commands.json
+
+# Compilation output
+*.o
+*.so
+*.a
+*.dylib
+*.out
+*.exe
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs and reports
+*.log
+*.core
+
+cmake-build-debug/
