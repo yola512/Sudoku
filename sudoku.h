@@ -14,7 +14,8 @@ void fillBox(int **board, int row, int col, int boardSize);
 void fillDiagonal(int **board, int boardSize);
 bool fillRemaining(int **board, int i, int j, int boardSize);
 void removeXDigits(int **board, int x, int boardSize);
-void generateSudoku(Game *game);
+int getNumberOfCellsToRemove(int boardSize, Difficulty difficulty);
+int **generateSudoku(Difficulty difficulty, int boardSize, Game *game);
 
 
 #endif //SUDOKU_H

@@ -17,7 +17,7 @@ int main() {
     srand(time(NULL));
     Game *currentGame = NULL;
     int running = 1;
-    int choice;
+    int option;
     char input[100];
 
     // menu
@@ -39,19 +39,13 @@ int main() {
             continue;
         }
 
-        if (sscanf(input, "%d", &choice) != 1) {
+        if (sscanf(input, "%d", &option) != 1) {
             printf("Invalid input. Please enter a number 1-5.\n");
             continue;
         }
 
-        switch (choice) {
+        switch (option) {
             case 1: {
-                if (currentGame != NULL) {
-                    freeGame(currentGame);
-                    currentGame = NULL;
-                }
-                fflush(stdin);
-
                 // board size selection
                 int boardSize;
                 Difficulty difficulty;
@@ -69,10 +63,10 @@ int main() {
 
                 if (sscanf(sizeInput, "%d", &boardSize) != 1 ||
                     (boardSize != 4 && boardSize != 9 && boardSize != 16)) {
-                    printf("Invalid size! Please enter 4, 9 or 16.\n");
-                    continue;
+                        printf("Invalid size! Please enter 4, 9 or 16.\n");
+                        continue;
                     }
-                fflush(stdin);
+
                 // difficulty selection
                 printf("\n*** Select Difficulty ***\n");
                 printf("[ Difficulty is based on the number of hints you get :) ]\n");
@@ -80,12 +74,12 @@ int main() {
                 printf("  b. Medium\n");
                 printf("  c. Hard\n");
                 printf("Difficulty choice: ");
+
                 if (fgets(difficultyInput, sizeof(difficultyInput), stdin) == NULL) {
                     printf("Error reading input\n");
                     continue;
                 }
                 difficultyInput[strcspn(difficultyInput, "\n")] = '\0'; // Remove newline
-                fflush(stdin);
                 if (strlen(difficultyInput) != 1) {
                     printf("Please enter exactly one character (a/b/c).\n");
                     continue;
@@ -101,23 +95,22 @@ int main() {
                 }
 
                 currentGame = createNewGame(boardSize, difficulty);
-                generateSudoku(currentGame);
+                currentGame->board = generateSudoku(difficulty, boardSize, currentGame);
                 printBoard(currentGame, false);
-                //playGame(currentGame);
+                playGame(currentGame);
 
                 break;
             }
             case 2: {
                 char filename[100];
                 printf("Enter filename to load: \n");
-                if (fgets(filename, sizeof(filename), stdin) == NULL) {
-                    printf("Error reading input\n");
-                    break;
-                }
-                filename[strcspn(filename, "\n")] = '\0'; // Remove newline
+                fgets(filename, sizeof(filename), stdin);
+                filename[strcspn(filename, "\n")] = '\0'; // remove newline
 
                 if (currentGame) {
-                    freeGame(currentGame);
+                    freeGame(currentGame->board, currentGame->boardSize);
+                    freeGame(currentGame->solution, currentGame->boardSize);
+                    free(currentGame);
                 }
                 currentGame = loadGameFromFile(filename);
 
@@ -157,10 +150,7 @@ int main() {
                 }
                 char filename[100];
                 printf("Enter filename to save: ");
-                if (fgets(filename, sizeof(filename), stdin) == NULL) {
-                    printf("Error reading input\n");
-                    break;
-                }
+                fgets(filename, sizeof(filename), stdin);
                 filename[strcspn(filename, "\n")] = '\0'; // remove newline
 
                 saveGameToFile(currentGame, filename);
@@ -169,6 +159,11 @@ int main() {
             }
             case 5: {
                 running = 0;
+                if (currentGame) {
+                    freeGame(currentGame->board, currentGame->boardSize);
+                    freeGame(currentGame->solution, currentGame->boardSize);
+                    free(currentGame);
+                }
                 printf("See you next time! :)\n");
                 break;
             }
@@ -176,9 +171,6 @@ int main() {
                 printf("Invalid option!\n");
             }
         }
-    }
-    if (currentGame) {
-        freeGame(currentGame);
     }
 
     return 0;

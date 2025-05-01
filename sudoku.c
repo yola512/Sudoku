@@ -125,77 +125,65 @@ void removeXDigits(int **board, int x, int boardSize) {
     }
 }
 
-
-void generateSudoku(Game *game) {
-    if (!game) return;
-
-    int boardSize = game->boardSize;
-    int emptyCells;
-
-    switch (game->difficulty) {
+int getNumberOfCellsToRemove(int boardSize, Difficulty difficulty) {
+    switch (difficulty) {
         case EASY:
-            emptyCells = boardSize * boardSize * 0.3;
+            if (boardSize == 4) return 5;
+            if (boardSize == 9) return 41;
+            if (boardSize == 16) return 116;
             break;
         case MEDIUM:
-            emptyCells = boardSize * boardSize * 0.5;
+            if (boardSize == 4) return 8;
+            if (boardSize == 9) return 48;
+            if (boardSize == 16) return 141;
             break;
         case HARD:
-            emptyCells = boardSize * boardSize * 0.65;
+            if (boardSize == 4) return 10;
+            if (boardSize == 9) return 55;
+            if (boardSize == 16) return 166;
             break;
         default:
-            emptyCells = boardSize * boardSize * 0.5;
-            break;
+            return 0;
     }
+    return 0;
+}
 
-    // Allocate memory
-    game->solution = (int **)malloc(game->boardSize * sizeof(int *));
-    if (!game->solution) return false;
+int **generateSudoku(Difficulty difficulty, int boardSize, Game *game) {
+    int x = getNumberOfCellsToRemove(boardSize, difficulty);
+    int **board = allocateBoard(boardSize);
 
-    for (int i = 0; i < game->boardSize; i++) {
-        game->solution[i] = (int *)calloc(game->boardSize, sizeof(int));
-        if (!game->solution[i]) {
-            for (int j = 0; j < i; j++) free(game->solution[j]);
-            free(game->solution);
-            return false;
+    if (board == NULL) {
+        return NULL;
+    }
+    // fill the board with zeros
+    for (int i = 0; i < boardSize; i++) {
+        for (int j = 0; j < boardSize; j++) {
+            board[i][j] = 0;
         }
     }
+    // 1. fill diagonal 3x3 boxes (upper left, middle, lower right)
+    fillDiagonal(board, boardSize);
 
-    // Generate solution
-    fillDiagonal(game->solution, game->boardSize);
-    if (!fillRemaining(game->solution, 0, 0, game->boardSize)) {
-        for (int i = 0; i < game->boardSize; i++) free(game->solution[i]);
-        free(game->solution);
-        return false;
+    // 2. fill remaining boxes on the board
+    if (!fillRemaining(board, 0, 0, boardSize)) {
+        freeGame(board, boardSize);
+        return NULL;
     }
 
-    // Allocate and copy to playable board
-    game->board = (int **)malloc(game->boardSize * sizeof(int *));
-    if (!game->board) {
-        for (int i = 0; i < game->boardSize; i++) free(game->solution[i]);
-        free(game->solution);
-        return false;
+    // 3. copy solved sudoku to game->solution using copyBoard
+    game->solution = allocateBoard(boardSize);
+    if (!game->solution) {
+        printf("Memory allocation failed for solution.\n");
+        freeGame(board, boardSize);
+        return NULL;
     }
 
-    for (int i = 0; i < game->boardSize; i++) {
-        game->board[i] = (int *)malloc(game->boardSize * sizeof(int));
-        if (!game->board[i]) {
-            for (int j = 0; j < i; j++) free(game->board[j]);
-            free(game->board);
-            for (int j = 0; j < game->boardSize; j++) free(game->solution[j]);
-            free(game->solution);
-            return false;
-        }
-        memcpy(game->board[i], game->solution[i], game->boardSize * sizeof(int));
-    }
+    copyBoard(board, game->solution, boardSize);
 
-    // // 2. copy solution to board before removing digits
-    // for (int i = 0; i < game->boardSize; i++) {
-    //     memcpy(game->board[i], game->solution[i], game->boardSize * sizeof(int));
-    // }
+    // 4. remove x random digits
+    removeXDigits(board, x, boardSize);
 
-    // 3. remove digits to create the puzzle
-    removeXDigits(game->board, emptyCells, game->boardSize);
-    return true;
+    return board;
 }
 
 

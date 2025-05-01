@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 void printBoard(Game *game, bool showSolution) {
     if (!game || !game->board || !game->solution) return;
@@ -130,22 +131,45 @@ Game *loadGameFromFile(const char *filename) {
     return game;
 }
 
-void freeGame(Game *game) {
-    if (game == NULL) return;
-
-    // Free the puzzle board
-    for (int i = 0; i < game->boardSize; i++) {
-        free(game->board[i]);
+void freeGame(int **board, int boardSize) {
+    if (board == NULL) {
+        return;
     }
-    free(game->board);
 
-    // Free the solution board
-    for (int i = 0; i < game->boardSize; i++) {
-        free(game->solution[i]);
+    for (int i = 0; i < boardSize; i++) {
+        free(board[i]);
     }
-    free(game->solution);
+    free(board);
+}
 
-    free(game);
+int **allocateBoard(int boardSize) {
+    int **board = malloc(boardSize * sizeof(int *));
+    if (board == NULL) {
+        perror("Error allocating memory for board");
+        return NULL;
+    }
+    for (int i = 0; i < boardSize; i++) {
+        board[i] = (int *)malloc(boardSize * sizeof(int));
+        if (board[i] == NULL) {
+            perror("Error allocating memory for board");
+            // free previously allocated memory
+            for (int j = 0; j < i; j++) {
+                free(board[j]);
+            }
+            free(board);
+            return NULL;
+        }
+    }
+    return board;
+}
+
+// used for copying the sudoku's solution (user can choose whether he/she wants to see it or not)
+void copyBoard(int **source, int **destination, int boardSize) {
+    for (int i = 0; i < boardSize; i++) {
+        for (int j = 0; j < boardSize; j++) {
+            destination[i][j] = source[i][j];
+        }
+    }
 }
 
 void playGame(Game *game) {
@@ -155,7 +179,7 @@ void playGame(Game *game) {
 
     while (gameRunning) {
         system("clear");
-        printBoard(game->board, false);
+        printBoard(game, false);
 
         printf("\nOptions:\n");
         printf("1. Make move (format: row col number)\n");
@@ -163,6 +187,7 @@ void playGame(Game *game) {
         printf("3. Back to menu\n");
         printf("Your choice: ");
         fgets(input, sizeof(input), stdin);
+        input[strcspn(input, "\n")] = '\0';
 
         switch (input[0]) {
             case '1': {
@@ -174,7 +199,6 @@ void playGame(Game *game) {
                     break;
                 }
 
-                // Adjust for 0-based indexing if needed
                 row--;
                 col--;
 
@@ -205,6 +229,7 @@ void playGame(Game *game) {
 
                 // Check if game is complete
                 if (isGameComplete(game)) {
+                    printBoard(game, false);
                     printf("Congratulations! You did it! :D\n");
                     gameRunning = false;
                 }
@@ -213,7 +238,7 @@ void playGame(Game *game) {
             case '2':
                 // Show solution
                 printf("\nSolution:\n");
-                printBoard(game->solution, true);
+                printBoard(game, true);
                 printf("Press Enter to return to menu...");
                 fgets(input, sizeof(input), stdin);
                 return; // exit the game
