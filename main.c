@@ -111,7 +111,6 @@ int main() {
                 }
                 else {
                     printf("\nGame loaded successfully!\n");
-                    printBoard(currentGame, false);
                     playGame(currentGame);
                 }
                 break;

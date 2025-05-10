@@ -75,19 +75,39 @@ Game *createNewGame(int size, Difficulty difficulty) {
 
 // save game to text file
 void saveGameToFile(Game *game, const char *filename) {
+    // check if game exists + check if the board was allocated properly
+    if (!game || !game->board) {
+        printf("Invalid game data. Cannot save.\n");
+        return;
+    }
+
     FILE *file = fopen(filename, "w");
     if (!file) {
         printf("Failed to open file for saving.\n");
         return;
     }
 
+    // save metadata (boardSize, difficulty)
     fprintf(file, "%d %d\n", game->boardSize, game->difficulty);
 
+    // save board
     for (int i = 0; i < game->boardSize; i++) {
         for (int j = 0; j < game->boardSize; j++) {
             fprintf(file, "%d ", game->board[i][j]);
         }
         fprintf(file, "\n");
+    }
+
+    // save solution
+    if (game->solution) {
+        // everything before #SOLUTION is a board displayed for player
+        fprintf(file, "#SOLUTION\n");
+        for (int i = 0; i < game->boardSize; i++) {
+            for (int j = 0; j < game->boardSize; j++) {
+                fprintf(file, "%d ", game->solution[i][j]);
+            }
+            fprintf(file, "\n");
+        }
     }
 
     fclose(file);
@@ -103,24 +123,69 @@ Game *loadGameFromFile(const char *filename) {
     }
 
     int size, difficulty;
-    fscanf(file, "%d %d", &size, &difficulty);
+    if (fscanf(file, "%d %d", &size, &difficulty) != 2) {
+        printf("Failed to read board size and difficulty.\n");
+        fclose(file);
+        return NULL;
+    }
 
     Game *game = malloc(sizeof(Game));
+    if (!game) {
+        printf("ERROR: Memory allocation failed");
+        fclose(file);
+        return NULL;
+    }
+
     game->boardSize = size;
     game->difficulty = difficulty;
 
-    game->board = malloc(size * sizeof(int *));
+    // allocate memory for board
+    game->board = allocateBoard(size);
 
-//    if (!game) {
-//        fclose(file);
-//        return NULL;
-//    }
+    if (!game->board) {
+        free(game);
+        fclose(file);
+        return NULL;
+    }
 
     for (int i = 0; i < size; i++) {
-        game->board[i] = malloc(size * sizeof(int));
         for (int j = 0; j < size; j++) {
-            fscanf(file, "%d", &game->board[i][j]);
+            if (fscanf(file, "%d", &game->board[i][j]) != 1) {
+                printf("ERROR: Failed to read board data\n");
+                freeGame(game);
+                fclose(file);
+                return NULL;
+            }
         }
+    }
+
+    // check if there is "#SOLUTION" in file and read the solution
+    char line[256];
+
+    while (fgets(line, sizeof(line), file)) {
+       if (strncmp(line, "#SOLUTION", 9) == 0) {
+           // allocate memory for solution
+           game->solution = allocateBoard(size);
+
+           if (!game->solution) {
+               printf("ERROR: Failed to allocate solution board\n");
+               freeGame(game);
+               fclose(file);
+               return NULL;
+           }
+
+           for (int i = 0; i < size; i++) {
+               for (int j = 0; j < size; j++) {
+                   if (fscanf(file, "%d", &game->solution[i][j]) != 1) {
+                       printf("ERROR: Failed to read solution data\n");
+                       freeGame(game);
+                       fclose(file);
+                       return NULL;
+                   }
+               }
+           }
+           break; // only one "#SOLUTION" should be in a file (is expected)
+       }
     }
 
     fclose(file);
