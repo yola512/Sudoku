@@ -11,20 +11,23 @@ Sudoku is a classic number puzzle where the objective is to fill a square board 
 e.g. A standard 9×9 board is divided into 3×3 subgrids (boxes). At the start of the game, some cells are already filled in — these are the hints. Your mission is to complete the rest of the board according to the rules.
 
 ## ✨ Features ✨
-- 🎯 3 DIFFICULTY LEVELS:
-  🟢 EASY
-  🟡 MEDIUM
-  🔴 HARD (worth to mention - 16×16 is a beast on its own!)
-- 🔢 3 BOARD SIZES:
-  * 4x4 (2x2 boxes)
-  * 9x9 (3x3 boxes)
-  * 16x16 (4x4 boxes)
-- 🧭 INTERACTIVE MAIN MENU:
-  1. New game.
-  2. Launch existing game.
-  3. Tutorial.
-  4. Exit.
-- 🎮 PLAYING MADE EASY:
+- 🎯 **3 DIFFICULTY LEVELS**:
+  - 🟢 EASY
+  - 🟡 MEDIUM
+  - 🔴 HARD (worth to mention - 16×16 is a beast on its own!)
+  
+- 🔢 **3 BOARD SIZES**:
+  - 4x4 (2x2 boxes)
+  - 9x9 (3x3 boxes)
+  - 16x16 (4x4 boxes)
+
+- 🧭 **INTERACTIVE MAIN MENU**:
+  1. New Game  
+  2. Load Existing Game  
+  3. Tutorial  
+  4. Exit
+     
+- 🎮 **PLAYING MADE EASY**:
   1. Effortless navigation thanks to clear and visually friendly row and column numbering.
   2. Stuck on a move? You can peek at the solution - only if you’re ready to admit defeat! ;)
   3. Save your progress anytime and continue whenever you like.
