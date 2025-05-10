@@ -27,4 +27,4 @@ e.g. A standard 9×9 board is divided into 3×3 subgrids (boxes). At the start o
   5. Exit.
 
 ## Problems...
-Program goes through createNewGame() and gets stack on generateSudoku() function... :(
+Program gets stack on createNewGame() function... :(
