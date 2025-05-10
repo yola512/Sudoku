@@ -1,7 +1,3 @@
-//
-// Created by Yola M on 30/04/2025.
-//
-
 #include "utils.h"
 #include "sudoku.h"
 #include <stdio.h>
@@ -17,6 +13,7 @@ void printBoard(Game *game, bool showSolution) {
     int **boardToPrint = showSolution ? game-> solution : game -> board;
 
     // numerating columns (easier for user)
+    printf("     \n");
     printf("     ");
     for (int i = 0; i < size; i++) {
         // +1 for 1-based indexing
@@ -131,15 +128,27 @@ Game *loadGameFromFile(const char *filename) {
     return game;
 }
 
-void freeGame(int **board, int boardSize) {
-    if (board == NULL) {
+void freeGame(Game *game) {
+    if (game == NULL) {
         return;
     }
 
-    for (int i = 0; i < boardSize; i++) {
-        free(board[i]);
+    // free memory for the board
+    for (int i = 0; i < game->boardSize; i++) {
+        free(game->board[i]);
     }
-    free(board);
+    free(game->board);
+
+    // free memory for solution (if exists)
+    if (game->solution != NULL) {
+        for (int i = 0; i < game-> boardSize; i++) {
+            free(game->solution[i]);
+        }
+        free(game->solution);
+    }
+
+    // free 'game' struct itself
+    free(game);
 }
 
 int **allocateBoard(int boardSize) {
@@ -172,6 +181,7 @@ void copyBoard(int **source, int **destination, int boardSize) {
     }
 }
 
+// function to make moves/save the game etc
 void playGame(Game *game) {
     char input[100];
     int row, col, number;
@@ -184,7 +194,8 @@ void playGame(Game *game) {
         printf("\nOptions:\n");
         printf("1. Make move (format: row col number)\n");
         printf("2. Show solution\n");
-        printf("3. Back to menu\n");
+        printf("3. Save current game.\n");
+        printf("4. Back to menu\n");
         printf("Your choice: ");
         fgets(input, sizeof(input), stdin);
         input[strcspn(input, "\n")] = '\0';
@@ -230,7 +241,7 @@ void playGame(Game *game) {
                 // Check if game is complete
                 if (isGameComplete(game)) {
                     printBoard(game, false);
-                    printf("Congratulations! You did it! :D\n");
+                    printf("\nCONGRATULATIONS! You did it! :D\n");
                     gameRunning = false;
                 }
                 break;
@@ -243,6 +254,18 @@ void playGame(Game *game) {
                 fgets(input, sizeof(input), stdin);
                 return; // exit the game
             case '3':
+                if (!game) {
+                    printf("No game to save! :( Create a new game first.\n");
+                    break;
+                }
+                char filename[100];
+                printf("Enter filename to save: ");
+                fgets(filename, sizeof(filename), stdin);
+                filename[strcspn(filename, "\n")] = '\0'; // remove newline
+
+                saveGameToFile(game, filename);
+                break;
+            case '4':
                 gameRunning = false;
                 break;
             default:
@@ -251,7 +274,7 @@ void playGame(Game *game) {
     }
 }
 
-bool isGameComplete(Game* game) {
+bool isGameComplete(Game *game) {
     for (int i = 0; i < game->boardSize; i++) {
         for (int j = 0; j < game->boardSize; j++) {
             if (game->board[i][j] == 0) {

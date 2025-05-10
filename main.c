@@ -1,10 +1,3 @@
-//
-// Created by Yola M on 28/04/2025.
-//
-//
-// Created by Yola M on 28/04/2025.
-//
-
 #include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +15,7 @@ int main() {
 
     // menu
     while (running) {
-        printf("********************************\n");
+        printf("\n********************************\n");
         printf("*       WELCOME TO SUDOKU!     *\n");
         printf("********************************\n");
         printf("\nMain Menu:\n");
@@ -30,8 +23,7 @@ int main() {
         printf("  1. New game.\n");
         printf("  2. Launch existing game.\n");
         printf("  3. Tutorial.\n");
-        printf("  4. Save current game.\n");
-        printf("  5. Exit.\n");
+        printf("  4. Exit.\n");
 
         printf("Please enter an option from the main menu: ");
         if (fgets(input, sizeof(input), stdin) == NULL) {
@@ -46,6 +38,9 @@ int main() {
 
         switch (option) {
             case 1: {
+                if (currentGame) {
+                    freeGame(currentGame);
+                }
                 // board size selection
                 int boardSize;
                 Difficulty difficulty;
@@ -73,18 +68,18 @@ int main() {
                 printf("  a. Easy\n");
                 printf("  b. Medium\n");
                 printf("  c. Hard\n");
-                printf("Difficulty choice: ");
+                printf("Difficulty choice:");
 
                 if (fgets(difficultyInput, sizeof(difficultyInput), stdin) == NULL) {
                     printf("Error reading input\n");
                     continue;
                 }
-                difficultyInput[strcspn(difficultyInput, "\n")] = '\0'; // Remove newline
+                // remove newline
+                difficultyInput[strcspn(difficultyInput, "\n")] = '\0';
                 if (strlen(difficultyInput) != 1) {
                     printf("Please enter exactly one character (a/b/c).\n");
                     continue;
                 }
-
                 switch (difficultyInput[0]) {
                     case 'a': case 'A': difficulty = EASY; break;
                     case 'b': case 'B': difficulty = MEDIUM; break;
@@ -96,7 +91,6 @@ int main() {
 
                 currentGame = createNewGame(boardSize, difficulty);
                 currentGame->board = generateSudoku(difficulty, boardSize, currentGame);
-                printBoard(currentGame, false);
                 playGame(currentGame);
 
                 break;
@@ -108,9 +102,7 @@ int main() {
                 filename[strcspn(filename, "\n")] = '\0'; // remove newline
 
                 if (currentGame) {
-                    freeGame(currentGame->board, currentGame->boardSize);
-                    freeGame(currentGame->solution, currentGame->boardSize);
-                    free(currentGame);
+                    freeGame(currentGame);
                 }
                 currentGame = loadGameFromFile(filename);
 
@@ -144,27 +136,11 @@ int main() {
                 break;
             }
             case 4: {
-                if (!currentGame) {
-                    printf("No game to save! :( Create a new game first.\n");
-                    break;
-                }
-                char filename[100];
-                printf("Enter filename to save: ");
-                fgets(filename, sizeof(filename), stdin);
-                filename[strcspn(filename, "\n")] = '\0'; // remove newline
-
-                saveGameToFile(currentGame, filename);
-                printf("Game saved to %s\n", filename);
-                break;
-            }
-            case 5: {
-                running = 0;
                 if (currentGame) {
-                    freeGame(currentGame->board, currentGame->boardSize);
-                    freeGame(currentGame->solution, currentGame->boardSize);
-                    free(currentGame);
+                    freeGame(currentGame);
                 }
                 printf("See you next time! :)\n");
+                running = 0;
                 break;
             }
             default: {

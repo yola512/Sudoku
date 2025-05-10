@@ -1,7 +1,3 @@
-//
-// Created by Yola M on 30/04/2025.
-//
-
 #include "sudoku.h"
 #include <math.h>
 #include <stdio.h>
@@ -31,9 +27,14 @@ bool unUsedInColumn(int **board, int j, int number, int boardSize) {
 }
 
 // check if 2x2/3x3/4x4 box contains number -> if it does, return false (meaning the number CANNOT be put in this box)
-bool unUsedInBox(int **board, int rowStart, int colStart, int number, int boardSize) {
-    for (int i = 0; i < sqrt(boardSize); i++) {
-        for (int j = 0; j < sqrt(boardSize); j++) {
+bool unUsedInBox(int **board, int i, int j, int number, int boardSize) {
+    int boxSize = sqrt(boardSize);
+    // row & column Start in a particular box
+    // e.g. i = 1, j = 4 -> rowStart = 0 colStart = 3
+    int rowStart = i - i % boxSize;
+    int colStart = j - j % boxSize;
+    for (int i = 0; i < boxSize; i++) {
+        for (int j = 0; j < boxSize; j++) {
             if( board[rowStart+i][colStart+j] == number) {
                 return false; // number already exists in the box
             }
@@ -54,9 +55,9 @@ bool finalCheck(int **board, int i, int j, int number, int boardSize) {
 // filling 2x2/3x3/4x4 matrix
 void fillBox(int **board, int row, int col, int boardSize) {
     int number;
-    int r = rand();
-    for (int i = 0; i < boardSize; i++) {
-        for (int j = 0; j < boardSize; j++) {
+    int boxSize = sqrt(boardSize);
+    for (int i = 0; i < boxSize; i++) {
+        for (int j = 0; j < boxSize; j++) {
             do {
                 number = rand() % boardSize + 1; // between 1-4/1-9/1-16
             }
@@ -95,7 +96,6 @@ bool fillRemaining(int **board, int i, int j, int boardSize) {
     // check if the number can be put in the cell
     if (finalCheck(board, i, j, number, boardSize)) {
       board[i][j] = number;
-
       // recursion used for filling next cells of the board
       if (fillRemaining(board, i, j+1, boardSize)) {
         // if the whole board has been filled properly - stop
@@ -151,22 +151,23 @@ int getNumberOfCellsToRemove(int boardSize, Difficulty difficulty) {
 int **generateSudoku(Difficulty difficulty, int boardSize, Game *game) {
     int x = getNumberOfCellsToRemove(boardSize, difficulty);
     int **board = allocateBoard(boardSize);
-
     if (board == NULL) {
         return NULL;
     }
+
     // fill the board with zeros
     for (int i = 0; i < boardSize; i++) {
         for (int j = 0; j < boardSize; j++) {
             board[i][j] = 0;
         }
     }
+
     // 1. fill diagonal 3x3 boxes (upper left, middle, lower right)
     fillDiagonal(board, boardSize);
 
-    // 2. fill remaining boxes on the board
+    // 2. fill remaining boxes on the board;
     if (!fillRemaining(board, 0, 0, boardSize)) {
-        freeGame(board, boardSize);
+        freeGame(game);
         return NULL;
     }
 
@@ -174,7 +175,7 @@ int **generateSudoku(Difficulty difficulty, int boardSize, Game *game) {
     game->solution = allocateBoard(boardSize);
     if (!game->solution) {
         printf("Memory allocation failed for solution.\n");
-        freeGame(board, boardSize);
+        freeGame(game);
         return NULL;
     }
 
