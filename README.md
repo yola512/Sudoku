@@ -36,4 +36,8 @@ e.g. A standard 9×9 board is divided into 3×3 subgrids (boxes). At the start o
 <img width="429" alt="Screenshot 2025-05-11 at 00 32 20" src="https://github.com/user-attachments/assets/79230eea-ead3-40ab-9628-e8decf7ed801" />
 
 
+## 📽️ GAME PREVIEW (sped up)
+
+https://github.com/user-attachments/assets/40de71f0-27fc-4d78-bd10-925221225523
+
 
