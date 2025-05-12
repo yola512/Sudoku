@@ -32,7 +32,7 @@ int main() {
         }
 
         if (sscanf(input, "%d", &option) != 1) {
-            printf("Invalid input. Please enter a number 1-5.\n");
+            printf("Invalid input. Please enter a number 1-4.\n");
             continue;
         }
 
@@ -92,6 +92,7 @@ int main() {
                 currentGame = createNewGame(boardSize, difficulty);
                 currentGame->board = generateSudoku(difficulty, boardSize, currentGame);
                 playGame(currentGame);
+
 
                 break;
             }

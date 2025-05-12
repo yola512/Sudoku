@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <_time.h>
 
 void printBoard(Game *game, bool showSolution) {
     if (!game || !game->board || !game->solution) return;
@@ -216,16 +217,17 @@ void freeGame(Game *game) {
     free(game);
 }
 
+// allocating memory for the board
 int **allocateBoard(int boardSize) {
     int **board = malloc(boardSize * sizeof(int *));
     if (board == NULL) {
-        perror("Error allocating memory for board");
+        perror("Error allocating memory for board\n");
         return NULL;
     }
     for (int i = 0; i < boardSize; i++) {
         board[i] = (int *)malloc(boardSize * sizeof(int));
         if (board[i] == NULL) {
-            perror("Error allocating memory for board");
+            perror("Error allocating memory for board\n");
             // free previously allocated memory
             for (int j = 0; j < i; j++) {
                 free(board[j]);
@@ -253,7 +255,6 @@ void playGame(Game *game) {
     bool gameRunning = true;
 
     while (gameRunning) {
-        system("clear");
         printBoard(game, false);
 
         printf("\nOptions:\n");

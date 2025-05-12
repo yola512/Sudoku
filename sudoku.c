@@ -125,6 +125,8 @@ void removeXDigits(int **board, int x, int boardSize) {
     }
 }
 
+// depending on difficulty and boardSize
+// get the number of cells to remove from the board
 int getNumberOfCellsToRemove(int boardSize, Difficulty difficulty) {
     switch (difficulty) {
         case EASY:
@@ -162,10 +164,10 @@ int **generateSudoku(Difficulty difficulty, int boardSize, Game *game) {
         }
     }
 
-    // 1. fill diagonal 3x3 boxes (upper left, middle, lower right)
+    // 1. fill diagonal 2x2/3x3/4x4 boxes (upper left, middle, lower right)
     fillDiagonal(board, boardSize);
 
-    // 2. fill remaining boxes on the board;
+    // 2. fill remaining boxes on the board
     if (!fillRemaining(board, 0, 0, boardSize)) {
         freeGame(game);
         return NULL;
