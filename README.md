@@ -8,23 +8,36 @@ Sudoku is a classic number puzzle where the objective is to fill a square board 
 	•	Each digit must appear exactly once in each column
 	•	Each digit must appear exactly once in each √n × √n subgrid (box)
 
-e.g. A standard 9×9 board is divided into 3×3 subgrids (boxes). At the start of the game, some cells are already filled in — these are the hints, and the player’s task is to complete the rest of the board according to the rules.
+e.g. A standard 9×9 board is divided into 3×3 subgrids (boxes). At the start of the game, some cells are already filled in — these are the hints. Your mission is to complete the rest of the board according to the rules.
 
 ## ✨ Features ✨
-- 3 DIFFICULTY LEVELS:
-  * EASY
-  * MEDIUM
-  * HARD (...16x16 board size is harder itself ;))
-- 3 BOARD SIZES:
-  * 4x4 (split into 2x2 boxes)
-  * 9x9 (split into 3x3 boxes)
-  * 16x16 (split into 4x4 boxes)
-- INTERACTIVE MAIN MENU:
-  1. New game.
-  2. Launch existing game.
-  3. Tutorial.
-  4. Save current game.
-  5. Exit.
+- 🎯 **3 DIFFICULTY LEVELS**:
+  - 🟢 EASY
+  - 🟡 MEDIUM
+  - 🔴 HARD (worth to mention - 16×16 is a beast on its own!)
+  
+- 🔢 **3 BOARD SIZES**:
+  - 4x4 (2x2 boxes)
+  - 9x9 (3x3 boxes)
+  - 16x16 (4x4 boxes)
 
-## Problems...
-Program gets stack on createNewGame() function... :(
+- 🧭 **INTERACTIVE MAIN MENU**:
+  1. New Game  
+  2. Load Existing Game  
+  3. Tutorial  
+  4. Exit
+     
+- 🎮 **PLAYING MADE EASY**:
+  1. Effortless navigation thanks to clear and visually friendly row and column numbering.
+  2. Stuck on a move? You can peek at the solution - only if you’re ready to admit defeat! ;)
+  3. Save your progress anytime and continue whenever you like.
+  4. Return to the main menu with a single keypress — simple and quick!
+  
+<img width="429" alt="Screenshot 2025-05-11 at 00 32 20" src="https://github.com/user-attachments/assets/79230eea-ead3-40ab-9628-e8decf7ed801" />
+
+
+## 📽️ GAME PREVIEW (sped up)
+
+https://github.com/user-attachments/assets/40de71f0-27fc-4d78-bd10-925221225523
+
+
